@@ -24,11 +24,11 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Start Mockoon server
-        run: npx @mockoon/cli@latest start --data mockoon/chargeback-qa-suite.json --port 3001 &
+      - name: Start mock server
+        run: node mockoon/server.js &
 
-      - name: Wait for Mockoon to be ready
-        run: npx wait-on http://localhost:3001/v2/payments/tr_44aKxzEbr8/chargebacks/chb_n9z0tp --timeout 15000
+      - name: Wait for mock server to be ready
+        run: sleep 2
 
       - name: Run Playwright tests
         run: npx playwright test
