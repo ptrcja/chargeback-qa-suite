@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'; 
-import { request } from 'node:http';
+
 
 const BASE_URL = 'http://localhost:3001';
 
