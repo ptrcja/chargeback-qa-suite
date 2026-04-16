@@ -1,0 +1,199 @@
+{
+  "uuid": "f805796a-63e0-4b8d-be52-709471c7d30b",
+  "lastMigration": 33,
+  "name": "Chargeback qa suite",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "9bd204a8-a441-4f12-b055-246b23ff7aeb",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v2/payments/:paymentId/chargebacks/:chargebackId",
+      "responses": [
+        {
+          "uuid": "d0026e1d-dd7f-4545-aea1-a2569ef5a6e6",
+          "body": "{\n  \"resource\": \"chargeback\",\n  \"id\": \"chb_n9z0tp\",\n  \"amount\": {\n    \"value\": \"-35.00\",\n    \"currency\": \"EUR\"\n  },\n  \"createdAt\": \"2025-01-26T11:44:32+00:00\",\n  \"paymentId\": \"tr_44aKxzEbr8\",\n  \"reasonCode\": \"item_not_received\",\n  \"respondBefore\": \"2025-02-09T11:44:32+00:00\",\n  \"settlementAmount\": {\n    \"value\": \"-35.00\",\n    \"currency\": \"EUR\"\n  },\n  \"_links\": {\n    \"payment\": {\n      \"href\": \"/v2/payments/tr_44aKxzEbr8\"\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "f26042b8-510f-4260-9ca5-47c49efdbdad",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v2/payments/:paymentId/chargebacks",
+      "responses": [
+        {
+          "uuid": "c5fadf6e-112d-4d88-9bb0-9957d92b2b15",
+          "body": "{\n  \"count\": 2,\n  \"_embedded\": {\n    \"chargebacks\": [\n      {\n        \"resource\": \"chargeback\",\n        \"id\": \"chb_n9z0tp\",\n        \"amount\": { \"value\": \"-35.00\", \"currency\": \"EUR\" },\n        \"createdAt\": \"2025-01-26T11:44:32+00:00\",\n        \"paymentId\": \"tr_44aKxzEbr8\",\n        \"reasonCode\": \"item_not_received\",\n        \"respondBefore\": \"2025-02-09T11:44:32+00:00\"\n      },\n      {\n        \"resource\": \"chargeback\",\n        \"id\": \"chb_m8y1up\",\n        \"amount\": { \"value\": \"-120.00\", \"currency\": \"EUR\" },\n        \"createdAt\": \"2025-01-20T09:12:00+00:00\",\n        \"paymentId\": \"tr_44aKxzEbr8\",\n        \"reasonCode\": \"fraudulent\",\n        \"respondBefore\": \"2025-02-03T09:12:00+00:00\"\n      }\n    ]\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "571ea1b0-7e73-4d56-83cd-b2e422e3cab3",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "v2/payments/:paymentId/chargebacks/:chargebackId/evidence",
+      "responses": [
+        {
+          "uuid": "ae8fbf83-f9c6-49d8-8829-133fdde4f5fc",
+          "body": "{\n  \"resource\": \"chargeback\",\n  \"id\": \"chb_n9z0tp\",\n  \"evidenceSubmitted\": true,\n  \"submittedAt\": \"2025-01-28T10:00:00+00:00\",\n  \"evidence\": {\n    \"trackingNumber\": \"FDX-123456789\",\n    \"orderConfirmation\": \"order_2025_001.pdf\",\n    \"customerEmail\": \"customer@example.com\",\n    \"notes\": \"Item delivered and signed for on 2026-01-20\"\n  },\n  \"status\": \"evidence_submitted\"\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "f163294c-6b64-46bf-9b48-5f33078779b1",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "v2/merchants/:merchantId/chargeback-ratio",
+      "responses": [
+        {
+          "uuid": "09898336-531a-4481-a764-afd70fc0d235",
+          "body": "{\n  \"merchantId\": \"merchant_001\",\n  \"period\": \"2025-01\",\n  \"totalTransactions\": 100,\n  \"totalChargebacks\": 3,\n  \"chargebackRatio\": 0.03,\n  \"threshold\": 0.005,\n  \"riskLevel\": \"high\",\n  \"warning\": \"Chargeback ratio exceeds acceptable threshold. Account at risk of suspension.\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "9bd204a8-a441-4f12-b055-246b23ff7aeb"
+    },
+    {
+      "type": "route",
+      "uuid": "f26042b8-510f-4260-9ca5-47c49efdbdad"
+    },
+    {
+      "type": "route",
+      "uuid": "571ea1b0-7e73-4d56-83cd-b2e422e3cab3"
+    },
+    {
+      "type": "route",
+      "uuid": "f163294c-6b64-46bf-9b48-5f33078779b1"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
