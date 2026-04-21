@@ -1,53 +1,77 @@
-import { test, expect } from '@playwright/test'; 
+import { test, expect } from "@playwright/test";
 
+const BASE_URL = "http://localhost:3001";
 
-const BASE_URL = 'http://localhost:3001';
+test.describe("Chargeback API", () => {
+  test("should return a single chargeback with correct structure", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      `${BASE_URL}/v2/payments/tr_44aKxzEbr8/chargebacks/chb_n9z0tp`,
+    );
 
-test.describe('Chargeback API', () => { 
+    expect(response.status()).toBe(200);
 
-    test('should return a single chargeback with correct structure', async ({request}) => {
-        const response = await request.get(
-            `${BASE_URL}/v2/payments/tr_44aKxzEbr8/chargebacks/chb_n9z0tp`
-        );
+    const body = await response.json();
+    expect(body.resource).toBe("chargeback");
+    expect(body.id).toBe("chb_n9z0tp");
+    expect(body.reasonCode).toBe("item_not_received");
+    expect(body.amount.currency).toBe("EUR");
+    expect(body.respondBefore).toBeDefined();
+  });
 
-            expect(response.status()).toBe(200);
+  test("should return a list of chargebacks for a payment", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      `${BASE_URL}/v2/payments/tr_44aKxzEbr8/chargebacks`,
+    );
 
-            const body = await response.json(); 
-            expect(body.resource).toBe('chargeback'); 
-            expect(body.id).toBe('chb_n9z0tp');  
-            expect(body.reasonCode).toBe('item_not_received'); 
-            expect(body.amount.currency).toBe('EUR'); 
-            expect(body.respondBefore).toBeDefined();  
+    expect(response.status()).toBe(200);
 
-        });
+    const body = await response.json();
+    expect(body.count).toBe(2);
+    expect(body._embedded.chargebacks).toHaveLength(2);
+    expect(body._embedded.chargebacks[0].reasonCode).toBe("item_not_received");
+    expect(body._embedded.chargebacks[1].reasonCode).toBe("fraudulent");
+  });
 
-        test('should return a list of chargebacks for a payment', async ({request}) => {
-            const response = await request.get( 
-                `${BASE_URL}/v2/payments/tr_44aKxzEbr8/chargebacks` 
-            ); 
+  test("should flag merchant with high chargeback ratio", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      `${BASE_URL}/v2/merchants/merchant_001/chargeback-ratio`,
+    );
 
-            expect(response.status()).toBe(200); 
+    expect(response.status()).toBe(200);
 
-            const body = await response.json(); 
-            expect(body.count).toBe(2);
-            expect(body._embedded.chargebacks).toHaveLength(2); 
-            expect(body._embedded.chargebacks[0].reasonCode).toBe('item_not_received'); 
-            expect(body._embedded.chargebacks[1].reasonCode).toBe('fraudulent');
-            
-        }); 
+    const body = await response.json();
+    expect(body.chargebackRatio).toBeGreaterThan(body.threshold);
+    expect(body.riskLevel).toBe("high");
+    expect(body.warning).toBeDefined();
+  });
 
-        test('should flag merchant with high chargeback ratio', async ({request}) => { 
-            const response = await request.get(  
-                `${BASE_URL}/v2/merchants/merchant_001/chargeback-ratio`
-            ); 
+  test("should reject evidence submission with missing tracking number", async ({
+    request,
+  }) => {
+    const response = await request.post(
+      `${BASE_URL}/v2/payments/tr_44aKxzEbr8/chargebacks/chb_n9z0tp/evidence`,
+      {
+        data: {
+          orderConfirmation: "order_2025_001.pdf",
+          customerEmail: "customer@example.com",
+        },
+      },
+    );
 
-            expect(response.status()).toBe(200);  
+    expect(response.status()).toBe(400);
+  });
 
-            const body = await response.json(); 
-            expect(body.chargebackRatio).toBeGreaterThan(body.threshold);
-            expect(body.riskLevel).toBe('high'); 
-            expect(body.warning).toBeDefined();  
-            
-        
-    });
+  test("should return 404 for non-existent chargeback", async ({ request }) => {
+    const response = await request.get(
+      `${BASE_URL}/v2/payments/tr_44aKxzEbr8/chargebacks/chb_doesnotexist`,
+    );
+
+    expect(response.status()).toBe(404);
+  });
 });

@@ -16,9 +16,38 @@ const routes = {
 };
 
 const server = http.createServer((req, res) => {
-  const key = `${req.method} ${req.url}`;
-  const route = routes[key];
   res.setHeader('Content-Type', 'application/json');
+
+  const key = `${req.method} ${req.url}`;
+
+  if (req.method === 'POST' && req.url.includes('/evidence')) {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        if (!data.trackingNumber) {
+          res.writeHead(400);
+          res.end(JSON.stringify({ error: 'trackingNumber is required' }));
+        } else {
+          res.writeHead(201);
+          res.end(JSON.stringify({ evidenceSubmitted: true, status: 'evidence_submitted' }));
+        }
+      } catch {
+        res.writeHead(400);
+        res.end(JSON.stringify({ error: 'Invalid JSON' }));
+      }
+    });
+    return;
+  }
+
+  if (req.method === 'GET' && req.url.includes('/chargebacks/') && !req.url.includes('chb_n9z0tp')) {
+    res.writeHead(404);
+    res.end(JSON.stringify({ error: 'Chargeback not found' }));
+    return;
+  }
+
+  const route = routes[key];
   if (route) {
     res.writeHead(route.status);
     res.end(JSON.stringify(route.body));
