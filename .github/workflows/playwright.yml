@@ -32,21 +32,22 @@ jobs:
 
       - name: Run Playwright tests
         id: run_tests
-        run: npx playwright test
+        run: npx playwright test 2>&1 | tee test-output.txt; exit ${PIPESTATUS[0]}
         continue-on-error: true
 
       - name: Notify triage agent on failure
         if: steps.run_tests.outcome == 'failure'
         run: |
+          FAILURE=$(cat test-output.txt | tail -50 | jq -Rs .)
           curl -X POST ${{ secrets.N8N_WEBHOOK_URL }} \
             -H "Content-Type: application/json" \
-            -d '{
-              "testName": "Playwright test suite",
-              "error": "One or more Playwright tests failed in CI. Check the Actions log for details.",
-              "repo": "chargeback-qa-suite",
-              "branch": "${{ github.ref_name }}",
-              "commit": "${{ github.sha }}"
-            }'
+            -d "{
+              \"testName\": \"Playwright test suite\",
+              \"error\": $FAILURE,
+              \"repo\": \"chargeback-qa-suite\",
+              \"branch\": \"${{ github.ref_name }}\",
+              \"commit\": \"${{ github.sha }}\"
+            }"
 
       - name: Fail pipeline if tests failed
         if: steps.run_tests.outcome == 'failure'
@@ -57,6 +58,4 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30 
-
-          
+          retention-days: 30
