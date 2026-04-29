@@ -46,15 +46,32 @@ jobs:
       - name: Notify triage agent on failure
         if: steps.run_tests.outcome == 'failure'
         run: |
-          FAILURE=$(cat test-output.txt | tail -50 | jq -Rs .)
+          FAILURE=$(cat test-output.txt | tail -80 | jq -Rs .)
+
+          # Extract failed test names from output
+          FAILED_TESTS=$(grep -E "^\s+[✘×]|FAILED" test-output.txt | head -10 | jq -Rs .)
+
+          # Extract browser info from failures
+          BROWSERS=$(grep -oE "\[chromium\]|\[firefox\]|\[webkit\]" test-output.txt | sort -u | tr '\n' ', ' | sed 's/,$//' | jq -Rs .)
+
+          # Get summary line (e.g. "3 failed, 12 passed")
+          SUMMARY=$(grep -E "^\s*\d+ (failed|passed)" test-output.txt | tail -1 | jq -Rs .)
+
           curl -X POST ${{ secrets.N8N_WEBHOOK_URL }} \
             -H "Content-Type: application/json" \
             -d "{
               \"testName\": \"Playwright test suite\",
               \"error\": $FAILURE,
+              \"failedTests\": $FAILED_TESTS,
+              \"browsers\": $BROWSERS,
+              \"summary\": $SUMMARY,
               \"repo\": \"chargeback-qa-suite\",
+              \"owner\": \"ptrcja\",
               \"branch\": \"${{ github.ref_name }}\",
-              \"commit\": \"${{ github.sha }}\"
+              \"commit\": \"${{ github.sha }}\",
+              \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
+              \"nodeVersion\": \"22\",
+              \"os\": \"ubuntu-latest\"
             }"
 
       - name: Fail pipeline if tests failed
