@@ -174,7 +174,7 @@ test.describe("Chargeback API", () => {
 
       const body = await response.json();
       expect(body.chargebackRatio).toBeGreaterThan(body.threshold);
-      expect(body.riskLevel).toBe("low");
+      expect(body.riskLevel).toBe("high");
       expect(body.warning).toBeDefined();
     });
 
