@@ -1,12 +1,15 @@
 {
   "name": "chargeback-qa-suite",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "description": "API test automation with AI-powered failure triage for payment chargeback systems",
+  "scripts": {
+    "mock": "node mockoon/server.js",
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:report": "playwright show-report"
+  },
+  "author": "Patrycja Gontarek",
+  "license": "MIT",
   "devDependencies": {
     "@mockoon/cli": "^9.6.1",
     "@playwright/test": "^1.59.1",
