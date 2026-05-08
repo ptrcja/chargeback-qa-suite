@@ -48,6 +48,8 @@ The pipeline POSTs failure context to an n8n webhook. From there:
 
 The whole pipeline runs in seconds. The team gets a triaged issue, not a wall of logs.
 
+This workflow ran on n8n cloud and produced the [Issue #12 example](https://github.com/ptrcja/chargeback-qa-suite/issues/12) above. The full definition is committed to [`docs/n8n-workflow.json`](docs/n8n-workflow.json) so it can be re-imported into n8n cloud or self-hosted n8n. Credentials (Anthropic API key, GitHub OAuth) need to be reconnected after import.
+
 ## Test coverage
 
 13 tests organized into three feature groups, run across Chromium, Firefox, and WebKit.
